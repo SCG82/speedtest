@@ -39,15 +39,17 @@
  *     from the worker about speed and progress. A data object will be passed to your onupdate function,
  *     with the following items:
  *     ```
- *      - dlStatus // download speed in mbps
- *      - ulStatus // upload speed in mbps
- *      - pingStatus // ping in ms
- *      - jitterStatus // jitter in ms
- *      - dlProgress // progress of the download test as a float 0-1
- *      - ulProgress // progress of the upload test as a float 0-1
- *      - pingProgress // progress of the ping/jitter test as a float 0-1
- *      - testState // state of the test (-1=not started, 0=starting, 1=download test, 2=ping+jitter test, 3=upload test, 4=finished, 5=aborted)
- *      - clientIp // IP address of the client performing the test (and optionally ISP and distance) 
+ *     {
+ *       dlStatus: number, // download speed in mbps
+ *       ulStatus: number, // upload speed in mbps
+ *       pingStatus: number, // ping in ms
+ *       jitterStatus: number, // jitter in ms
+ *       dlProgress: number, // progress of the download test as a float 0-1
+ *       ulProgress: number, // progress of the upload test as a float 0-1
+ *       pingProgress: number, // progress of the ping/jitter test as a float 0-1
+ *       testState: number, // state of the test: -1 = not started, 0 = starting, 1 = download test, 2 = ping + jitter test, 3 = upload test, 4 = finished, 5 = aborted
+ *       clientIp: string, // IP address of the client performing the test (and optionally ISP and distance)
+ *     }
  *     ```
  *     At the end of the test, the onend function will be called, with a boolean specifying whether the test was
  *     aborted or if it ended normally. The test can be aborted at any time with abort().
