@@ -1,11 +1,11 @@
 //@ts-check
 
-/*
-	LibreSpeed - Main
-	by Federico Dossena
-	https://github.com/librespeed/speedtest/
-	GNU LGPLv3 License
-*/
+/**
+ * LibreSpeed - Main
+ * @author Federico Dossena
+ * @url https://github.com/librespeed/speedtest/
+ * @license LGPLv3 License
+ */
 
 /**
  * This is the main interface between your webpage and the speedtest.
