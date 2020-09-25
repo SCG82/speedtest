@@ -1,12 +1,13 @@
-// @ts-check
-/* eslint-env worker */
+/**
+ * @file LibreSpeed - Worker
+ * @author Federico Dossena
+ * @license LGPL-3.0-only
+ * @see https://github.com/librespeed/speedtest/
+ */
 
-/*
-	LibreSpeed - Worker
-	by Federico Dossena
-	https://github.com/librespeed/speedtest/
-	GNU LGPLv3 License
-*/
+// @ts-check
+/* eslint-env worker, es2020 */
+/* eslint-disable indent, no-empty */
 
 // data reported to main thread
 let testState = -1; // -1=not started, 0=starting, 1=download test, 2=ping+jitter test, 3=upload test, 4=finished, 5=abort
@@ -47,7 +48,9 @@ function twarn(s) {
 	console.warn(s);
 }
 
-// test settings. can be overridden by sending specific values with the start command
+/**
+ * Test settings - can be overridden by sending specific values with the start command
+ */
 const settings = {
 	mpot: false, // set to true when in MPOT mode
 	test_order: "IP_D_U", // order in which tests will be performed as a string. D=Download, U=Upload, P=Ping+Jitter, I=IP, _=1 second delay
@@ -79,17 +82,11 @@ const settings = {
 	telemetry_extra: "" // extra data that can be passed to the telemetry through the settings
 };
 
+/** @type {XMLHttpRequest[]} */
 let xhr = null; // array of currently active xhr requests
+/** @type {number} */
 let interval = null; // timer used in tests
 let test_pointer = 0; // pointer to the next test to run inside settings.test_order
-
-/**
- * this function is used on URLs passed in the settings to determine whether we need a ? or an & as a separator
- * @param {string} url
- */
-function url_sep(url) {
-	return url.match(/\?/) ? "&" : "?";
-}
 
 /**
  * listener for commands from main thread to this worker.
@@ -132,7 +129,7 @@ this.addEventListener("message", (e) => {
 				twarn("Error parsing custom settings JSON. Please check your syntax");
 			}
 			// copy custom settings
-			for (let key in s) {
+			for (const key in s) {
 				if (typeof settings[key] !== "undefined") settings[key] = s[key];
 				else twarn("Unknown setting ignored: " + key);
 			}
@@ -283,7 +280,7 @@ this.addEventListener("message", (e) => {
 		pingProgress = 0;
 	}
 });
-/** 
+/**
  * stops all XHR activity, aggressively
  */
 function clearRequests() {
@@ -309,7 +306,7 @@ function clearRequests() {
 let ipCalled = false; // used to prevent multiple accidental calls to getIp
 let ispInfo = ""; // used for telemetry
 /**
- * gets client's IP using url_getIp, then calls the done function
+ * gets client's IP using `url_getIp`, then calls the `done()` function
  * @param {() => void} done
  */
 function getIp(done) {
@@ -317,7 +314,7 @@ function getIp(done) {
 	if (ipCalled) return;
 	ipCalled = true; // getIp already called?
 	const startT = new Date().getTime();
-	xhr = new XMLHttpRequest();
+	const xhr = new XMLHttpRequest();
 	xhr.onload = () => {
 		tlog("IP: " + xhr.responseText + ", took " + (new Date().getTime() - startT) + "ms");
 		try {
@@ -447,7 +444,7 @@ function dlTest(done) {
 let ulCalled = false; // used to prevent multiple accidental calls to ulTest
 /**
  * upload test, calls done function when it's over
- * @param {() => void} done 
+ * @param {() => void} done
  */
 function ulTest(done) {
 	tverb("ulTest");
@@ -647,9 +644,10 @@ function pingTest(done) {
 				if (settings.ping_allowPerformanceApi) {
 					try {
 						// try to get accurate performance timing using performance api
-						const p = performance.getEntries();
-						const pl = p[p.length - 1];
-						let d = pl.responseStart - pl.requestStart;
+						const pl = performance.getEntries();
+						/** @type {PerformanceResourceTiming} */
+						const p = pl[pl.length - 1];
+						let d = p.responseStart - p.requestStart;
 						if (d <= 0) d = p.duration;
 						if (d > 0 && d < instspd) instspd = d;
 					} catch (e) {
@@ -717,8 +715,7 @@ function pingTest(done) {
 	doPing(); // start first ping
 }
 /**
- * telemetry
- * @param {(id: string) => void} done
+ * @param {(id?: string) => void} done
  */
 function sendTelemetry(done) {
 	if (settings.telemetry_level < 1) return;
@@ -756,4 +753,12 @@ function sendTelemetry(done) {
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhr.send(postData);
 	}
+}
+
+/**
+ * this function is used on URLs passed in the settings to determine whether we need a '?' or an '&' as a separator
+ * @param {string} url
+ */
+function url_sep(url) {
+	return url.match(/\?/) ? "&" : "?";
 }

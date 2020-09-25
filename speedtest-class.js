@@ -1,11 +1,12 @@
-//@ts-check
-
 /**
- * LibreSpeed - Main
+ * @file LibreSpeed - Main
  * @author Federico Dossena
- * @url https://github.com/librespeed/speedtest/
- * @license LGPLv3 License
+ * @license LGPL-3.0-only
+ * https://github.com/librespeed/speedtest/
  */
+
+// @ts-check
+/* eslint-env browser, es2020 */
 
 /**
  * This is the main interface between your webpage and the speedtest.
@@ -49,7 +50,7 @@
  *       dlProgress: number, // progress of the download test as a float 0-1
  *       ulProgress: number, // progress of the upload test as a float 0-1
  *       pingProgress: number, // progress of the ping/jitter test as a float 0-1
- *       testState: number, // state of the test: -1 = not started, 0 = starting, 1 = download test, 2 = ping + jitter test, 3 = upload test, 4 = finished, 5 = aborted
+ *       testState: number, // -1: not started, 0: starting, 1: download, 2: ping+jitter, 3: upload, 4: finished, 5: aborted
  *       clientIp: string, // IP address of the client performing the test (and optionally ISP and distance)
  *     }
  *     ```
@@ -137,7 +138,7 @@ class Speedtest {
   }
   /**
    * Same as addTestPoint, but you can pass an array of servers
-   * @param {Array<Server>} list - array of server objects
+   * @param {Server[]} list - array of server objects
    */
   addTestPoints(list) {
     for (let i = 0; i < list.length; i++) {
@@ -193,8 +194,7 @@ class Speedtest {
    */
   setSelectedServer(server) {
     this._checkServerDefinition(server);
-    if (this._state === 3)
-      throw new Error("You can't select a server while the test is running");
+    if (this._state === 3) throw new Error("You can't select a server while the test is running");
     this._selectedServer = server;
     this._state = 2;
   }
@@ -247,7 +247,6 @@ class Speedtest {
               const pArr = performance.getEntriesByName(url, "resource");
               /** @type {PerformanceResourceTiming} */
               const p = pArr[pArr.length - 1];
-              p.startTime
               let d = p.responseStart - p.requestStart;
               if (d <= 0) d = p.duration;
               if (d > 0 && d < instspd) instspd = d;
@@ -267,8 +266,8 @@ class Speedtest {
         }
         xhr.send();
       };
-      const PINGS = 3; //up to 3 pings are performed, unless the server is down...
-      const SLOW_THRESHOLD = 500; //...or one of the pings is above this threshold
+      const PINGS = 3; // up to 3 pings are performed, unless the server is down...
+      const SLOW_THRESHOLD = 500; // ...or one of the pings is above this threshold
       /**
        * This function repeatedly pings a server to get a good estimate of the ping.
        * When it's done, it calls the done function without parameters.
@@ -280,9 +279,15 @@ class Speedtest {
       const checkServer = (server, done) => {
         let i = 0;
         server.pingT = -1;
-        if (server.server.indexOf(location.protocol) === -1) return void done();
+        if (server.server.indexOf(location.protocol) === -1) {
+          done();
+          return;
+        }
         const nextPing = () => {
-          if (i++ === PINGS) return void done();
+          if (i++ === PINGS) {
+            done();
+            return;
+          }
           ping(
             server.server + server.pingURL,
             (t) => {
@@ -290,14 +295,18 @@ class Speedtest {
                 if (t < server.pingT || server.pingT === -1) server.pingT = t;
                 if (t < SLOW_THRESHOLD) nextPing();
                 else done();
-              } else done();
+              } else {
+                done();
+              }
             }
           );
         };
         nextPing();
       };
-      // Check servers in list, one by one
       let index = 0;
+      /**
+       * Check servers in list, one by one
+       */
       const done = () => {
         let bestServer = null;
         for (let i = 0; i < serverList.length; i++) {
@@ -310,7 +319,10 @@ class Speedtest {
         result(bestServer);
       };
       const nextServer = () => {
-        if (index === serverList.length) return void done();
+        if (index === serverList.length) {
+          done();
+          return;
+        }
         checkServer(serverList[index++], nextServer);
       };
       nextServer();
@@ -402,7 +414,7 @@ class Speedtest {
     if (this._state < 3) throw new Error("You cannot abort a test that's not started yet");
     if (this._state < 4) this.worker.postMessage("abort");
   }
-};
+}
 
 /**
  * @typedef {Object} Server
