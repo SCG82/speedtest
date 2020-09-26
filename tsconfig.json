@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "es2017",
+        "allowSyntheticDefaultImports": false,
+        "esModuleInterop": false,
+        "baseUrl": ".",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "strict": true,
+        "declaration": true,
+        "sourceMap": true,
+        "noLib": false,
+        "removeComments": false,
+        "stripInternal": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true
+    }
+}
