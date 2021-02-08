@@ -694,7 +694,7 @@ function pingTest(done) {
 			}
 		};
 		// send xhr
-		xhr[0].open("GET", settings.url_ping + url_sep(settings.url_ping) + (settings.mpot ? "cors=true&" : "") + "r=" + Math.random(), true); // random string to prevent caching
+		xhr[0].open("GET", settings.url_ping + url_sep(settings.url_ping) + (settings.mpot ? "cors=true&ckSize=1&" : "ckSize=1&") + "r=" + Math.random(), true); // random string to prevent caching
 		xhr[0].send();
 	};
 	doPing(); // start first ping
