@@ -50,7 +50,9 @@ function twarn(s) {
 const settings = {
 	mpot: false, // set to true when in MPOT mode
 	test_order: "IP_D_U", // order in which tests will be performed as a string. D=Download, U=Upload, P=Ping+Jitter, I=IP, _=1 second delay
+	time_ul_min: 8, // min duration of upload test in seconds
 	time_ul_max: 15, // max duration of upload test in seconds
+	time_dl_min: 8, // min duration of download test in seconds
 	time_dl_max: 15, // max duration of download test in seconds
 	time_auto: true, // if set to true, tests will take less time on faster connections
 	time_ulGraceTime: 3, // time to wait in seconds before actually measuring ul speed (wait for buffers to fill)
@@ -400,7 +402,8 @@ function dlTest(done) {
 				if (settings.time_auto) {
 					// decide how much to shorten the test. Every 200ms, the test is shortened by the bonusT calculated here
 					const bonus = 5.0 * speed / 100000;
-					bonusT += bonus > 400 ? 400 : bonus;
+					//bonusT += bonus > 400 ? 400 : bonus;
+					bonusT = Math.min(bonusT + Math.min(bonus, 400), settings.time_dl_max - settings.time_dl_min);
 				}
 				// update status
 				dlStatus = Number((speed * 8 * settings.overheadCompensationFactor / (settings.useMebibits ? 1048576 : 1000000)).toFixed(2)); // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
@@ -558,7 +561,8 @@ function ulTest(done) {
 					if (settings.time_auto) {
 						// decide how much to shorten the test. Every 200ms, the test is shortened by the bonusT calculated here
 						const bonus = 5.0 * speed / 100000;
-						bonusT += bonus > 400 ? 400 : bonus;
+						//bonusT += bonus > 400 ? 400 : bonus;
+						bonusT = Math.min(bonusT + Math.min(bonus, 400), settings.time_ul_max - settings.time_ul_min);
 					}
 					// update status
 					ulStatus = Number((speed * 8 * settings.overheadCompensationFactor / (settings.useMebibits ? 1048576 : 1000000)).toFixed(2)); // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
