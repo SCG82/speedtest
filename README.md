@@ -7,7 +7,7 @@ No Flash, No Java, No Websocket, No Bullshit.
 This is a very lightweight Speedtest implemented in Javascript, using XMLHttpRequest and Web Workers.
 
 ## Try it
-[Take a Speedtest](https://librespeed.org)
+[Take a Speedtest](https://mfcalerts1.ord.myfreecams.com/speedtest)
 
 ## Compatibility
 All modern browsers are supported: IE11, latest Edge, latest Chrome, latest Firefox, latest Safari.  
