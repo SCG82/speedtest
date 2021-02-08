@@ -60,7 +60,7 @@ const settings = {
 	count_ping: 35, // number of pings to perform in ping test
 	url_dl: "backend/garbage.php", // path to a large file or garbage.php, used for download test. must be relative to this js file
 	url_ul: "backend/empty.php", // path to an empty file, used for upload test. must be relative to this js file
-	url_ping: "backend/empty.php", // path to an empty file, used for ping test. must be relative to this js file
+	url_ping: "backend/garbage.php", // path to an empty file, used for ping test. must be relative to this js file
 	url_getIp: "backend/getIP.php", // path to getIP.php relative to this js file, or a similar thing that outputs the client's ip
 	getIp_ispInfo: true, // if set to true, the server will include ISP info with the IP address
 	getIp_ispInfo_distance: "km", // km or mi=estimate distance from server in km/mi; set to false to disable distance estimation. getIp_ispInfo must be enabled in order for this to work
