@@ -643,7 +643,7 @@ function pingTest(done) {
 				} else {
 					if (instspd < ping) ping = instspd; // update ping, if the instant ping is lower
 					if (i === 2) jitter = instjitter; // discard the first jitter measurement because it might be much higher than it should be
-					else jitter += (instjitter - jitter) / 16; // RFC 3550
+					else jitter += (instjitter - jitter) * 2 / 9;
 					// else jitter = instjitter > jitter ? jitter * 0.3 + instjitter * 0.7 : jitter * 0.8 + instjitter * 0.2; // update jitter, weighted average. spikes in ping values are given more weight.
 				}
 				prevInstspd = instspd;
