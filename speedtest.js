@@ -64,7 +64,7 @@ class Speedtest {
     this._state = 0; //0=adding settings, 1=adding servers, 2=server selection done, 3=test running, 4=done
     this.onupdate = undefined;
     this.onend = undefined;
-    console.log("LibreSpeed by Federico Dossena v5.2 - https://github.com/librespeed/speedtest");
+    console.log("LibreSpeed by Federico Dossena v5.2.2 - https://github.com/librespeed/speedtest");
   }
 
   /**
