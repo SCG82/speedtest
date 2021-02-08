@@ -55,7 +55,7 @@ const settings = {
 	time_auto: true, // if set to true, tests will take less time on faster connections
 	time_ulGraceTime: 3, // time to wait in seconds before actually measuring ul speed (wait for buffers to fill)
 	time_dlGraceTime: 1.5, // time to wait in seconds before actually measuring dl speed (wait for TCP window to increase)
-	count_ping: 32, // number of pings to perform in ping test
+	count_ping: 35, // number of pings to perform in ping test
 	url_dl: "backend/garbage.php", // path to a large file or garbage.php, used for download test. must be relative to this js file
 	url_ul: "backend/empty.php", // path to an empty file, used for upload test. must be relative to this js file
 	url_ping: "backend/empty.php", // path to an empty file, used for ping test. must be relative to this js file
