@@ -13,11 +13,11 @@
  *
  * - To initialize the test, create a new Speedtest object: `const s = new Speedtest();`.
  *
- * You can think of this as a finite state machine. These are the states (use getState() to see them):
- * - __0__: here you can change the speedtest settings (such as test duration) with the setParameter("parameter",value)
- *     method. From here you can either start the test using start() (goes to state 3) or you can add multiple test
- *     points using addTestPoint(server) or addTestPoints(serverList) (goes to state 1). Additionally, this is the
- *     perfect moment to set up callbacks for the onupdate(data) and onend(aborted) events.
+ * You can think of this as a finite state machine. These are the states (use `getState()` to see them):
+ * - __0__: here you can change the speedtest settings (such as test duration) with the `setParameter("parameter",value)`
+ *     method. From here you can either start the test using `start()` (goes to state 3) or you can add multiple test
+ *     points using `addTestPoint(server)` or `addTestPoints(serverList)` (goes to state 1). Additionally, this is the
+ *     perfect moment to set up callbacks for the `onupdate(data)` and `onend(aborted)` events.
  * - __1__: here you can add test points. You only need to do this if you want to use multiple test points.
  *     A server is defined as an object like this:
  *     ```
@@ -31,10 +31,10 @@
  *     }
  *     ```
  *     While in state 1, you can only add test points, you cannot change the test settings. When you're done, use
- *     selectServer(callback) to select the test point with the lowest ping. This is asynchronous, when it's done,
- *     it will call your callback function and move to state 2. Calling setSelectedServer(server) will manually
+ *     `selectServer(callback)` to select the test point with the lowest ping. This is asynchronous: when it's done,
+ *     it will call your callback function and move to state 2. Calling `setSelectedServer(server)` will manually
  *     select a server and move to state 2.
- * - __2__: test point selected, ready to start the test. Use start() to begin, this will move to state 3.
+ * - __2__: test point selected, ready to start the test. Use `start()` to begin, this will move to state 3.
  * - __3__: test running. Here, your onupdate event calback will be called periodically, with data coming
  *     from the worker about speed and progress. A data object will be passed to your onupdate function,
  *     with the following items:
@@ -52,23 +52,23 @@
  *     }
  *     ```
  *     At the end of the test, the onend function will be called, with a boolean specifying whether the test was
- *     aborted or if it ended normally. The test can be aborted at any time with abort().
+ *     aborted or if it ended normally. The test can be aborted at any time with `abort()`.
  *     At the end of the test, it will move to state 4.
- * - __4__: test finished. You can run it again by calling start() if you want.
+ * - __4__: test finished. You can run it again by calling `start()` if you want.
  */
 class Speedtest {
   constructor() {
-    this._serverList = []; //when using multiple points of test, this is a list of test points
-    this._selectedServer = null; //when using multiple points of test, this is the selected server
-    this._settings = {}; //settings for the speedtest worker
-    this._state = 0; //0=adding settings, 1=adding servers, 2=server selection done, 3=test running, 4=done
+    this._serverList = []; // when using multiple points of test, this is a list of test points
+    this._selectedServer = null; // when using multiple points of test, this is the selected server
+    this._settings = {}; // settings for the speedtest worker
+    this._state = 0; // 0=adding settings, 1=adding servers, 2=server selection done, 3=test running, 4=done
     this.onupdate = undefined;
     this.onend = undefined;
-    console.log("LibreSpeed by Federico Dossena v5.2 - https://github.com/librespeed/speedtest");
+    console.log("LibreSpeed by Federico Dossena v5.2.2 - https://github.com/librespeed/speedtest");
   }
 
   /**
-   * Returns the state of the test: 0=adding settings, 1=adding servers, 2=server selection done, 3=test running, 4=done
+   * Returns the state of the test.
    * @returns {number} 0=adding settings, 1=adding servers, 2=server selection done, 3=test running, 4=done
    */
   getState() {
@@ -76,10 +76,10 @@ class Speedtest {
   }
 
   /**
-   * Change one of the test settings from their defaults.
+   * Override a default test setting.
    * Invalid values or nonexistant parameters will be ignored by the speedtest worker.
-   * @param {string} parameter - string with the name of the parameter that you want to set
-   * @param value - new value for the parameter
+   * @param {string} parameter - Name of the parameter to set
+   * @param value - New value for the parameter
    */
   setParameter(parameter, value) {
     if (this._state === 3)
@@ -120,14 +120,14 @@ class Speedtest {
 
   /**
    * Add a test point (multiple points of test)
-   * @param {Server} server - the server to be added as an object. Must contain the following elements:
+   * @param {Server} server - The server to be added as an object. Must contain the following elements:
    * ```
    * name: "User friendly name"
-   * server: "http://yourBackend.com/" // server URL. If both http & https are supported, just use // without protocol
-   * dlURL: "garbage.php" // path to garbage.php or its replacement on the server
-   * ulURL: "empty.php" // path to empty.php or its replacement on the server
-   * pingURL: "empty.php" // path to empty.php or its replacement on the server
-   * getIpURL: "getIP.php" // path to getIP.php or its replacement on the server
+   * server: "http://yourBackend.com/" // Server URL. If both http & https are supported, just use // without protocol
+   * dlURL: "garbage.php" // Path to garbage.php or its replacement on the server
+   * ulURL: "empty.php" // Path to empty.php or its replacement on the server
+   * pingURL: "empty.php" // Path to empty.php or its replacement on the server
+   * getIpURL: "getIP.php" // Path to getIP.php or its replacement on the server
    * ```
    */
   addTestPoint(server) {
@@ -140,7 +140,7 @@ class Speedtest {
 
   /**
    * Same as `addTestPoint`, but you can pass an array of servers
-   * @param {Server[]} list - array of server objects
+   * @param {Server[]} list - Array of server objects
    */
   addTestPoints(list) {
     for (let i = 0; i < list.length; i++) {
@@ -150,17 +150,17 @@ class Speedtest {
 
   /**
    * Load a JSON server list from URL (multiple points of test)
-   * @param {string} url - the url where the server list can be fetched.
+   * @param {string} url - The url where the server list can be fetched.
    * Must be an array with objects containing the following elements:
    * ```
    * name: "User friendly name",
-   * server: "http://yourBackend.com/", // server URL. If both http & https are supported, just use // without protocol
-   * dlURL: "garbage.php", // path to garbage.php or its replacement on the server
-   * ulURL: "empty.php", // path to empty.php or its replacement on the server
-   * pingURL: "empty.php", // path to empty.php or its replacement on the server
-   * getIpURL: "getIP.php", // path to getIP.php or its replacement on the server
+   * server: "http://yourBackend.com/", // Server URL. If both http & https are supported, just use // without protocol
+   * dlURL: "garbage.php", // Path to garbage.php or its replacement on the server
+   * ulURL: "empty.php", // Path to empty.php or its replacement on the server
+   * pingURL: "empty.php", // Path to empty.php or its replacement on the server
+   * getIpURL: "getIP.php", // Path to getIP.php or its replacement on the server
    * ```
-   * @param {(x: Server[] | null) => void} result - callback to be called when the list is loaded correctly.
+   * @param {(x: Server[] | null) => void} result - Callback to be called when the list is loaded correctly.
    * An array with the loaded servers will be passed to this function, or null if it failed.
    */
   loadServerList(url, result) {
@@ -172,7 +172,7 @@ class Speedtest {
       try {
         /** @type {Server[]} */
         const servers = JSON.parse(xhr.responseText);
-        for (let i = 0; i < servers.length; i++){
+        for (let i = 0; i < servers.length; i++) {
           this._checkServerDefinition(servers[i]);
         }
         this.addTestPoints(servers);
@@ -196,16 +196,16 @@ class Speedtest {
 
   /**
    * @typedef {Object} Server
-   * @property {string} name user friendly name
+   * @property {string} name User friendly name
    * @property {string} server URL to your server. You can specify http:// or https://. If your server supports both, just write // without the protocol
-   * @property {string} dlURL path to __garbage.php__ or its replacement on the server
-   * @property {string} ulURL path to __empty.php__ or its replacement on the server
-   * @property {string} pingURL path to __empty.php__ or its replacement on the server. This is used to ping the server by this selector
-   * @property {string} getIpURL path to __getIP.php__ or its replacement on the server
-   * @property {number} pingT calculated (do not set). either the best ping we got from the server or -1 if something went wrong.
+   * @property {string} dlURL Path to garbage.php or its replacement on the server
+   * @property {string} ulURL Path to empty.php or its replacement on the server
+   * @property {string} pingURL Path to empty.php or its replacement on the server. This is used to ping the server by this selector
+   * @property {string} getIpURL Path to getIP.php or its replacement on the server
+   * @property {number} pingT Calculated (do not set). either the best ping we got from the server or -1 if something went wrong.
    */
   /**
-   * Manually selects one of the test points (multiple points of test)
+   * Manually select one of the test points (multiple points of test)
    * @param {Server} server
    */
   setSelectedServer(server) {
@@ -216,7 +216,7 @@ class Speedtest {
   }
 
   /**
-   * Automatically selects a server from the list of added test points.
+   * Automatically select a server from the list of added test points.
    * The server with the lowest ping will be chosen (multiple points of test).
    * The process is asynchronous and the passed result callback function will
    * be called when it's done, then the test can be started.
@@ -231,34 +231,28 @@ class Speedtest {
     if (this._selectServerCalled) throw new Error("selectServer already called");
     else this._selectServerCalled = true;
     /**
-     * This function goes through a list of servers. For each server, the ping is measured,
-     * then the server with the function result is called with the best server,
-     * or null if all the servers were down.
+     * Iterates through a list of servers: for each server, the ping is measured,
+     * then `selected(server)` is called with the server with the lowest ping (null if all the servers were down).
      * @param {Server[]} serverList
-     * @param {(x: Server | null) => void} result parameter is either the best server or null if all servers were down
+     * @param {(x: Server | null) => void} selected - Either the best server or null if all servers were down
      */
-    const select = (serverList, result) => {
+    const select = (serverList, selected) => {
       const PING_TIMEOUT = 2000;
-      // will be disabled on unsupported browsers
-      let USE_PING_TIMEOUT = true;
-      if (/MSIE.(\d+\.\d+)/i.test(navigator.userAgent)) {
-        // IE11 doesn't support XHR timeout
-        USE_PING_TIMEOUT = false;
-      }
+      // IE11 doesn't support XHR timeout
+      const USE_PING_TIMEOUT = !(/MSIE.(\d+\.\d+)/i.test(navigator.userAgent));
       /**
-       * Pings the specified URL, then calls the function result. Result will receive a parameter
-       * which is either the time it took to ping the URL, or -1 if something went wrong.
+       * Ping the specified URL, then calls `rtt(ping)`.
        * @param {string} url
-       * @param {(pingMs: number) => void} result parameter is either the time it took to ping the URL, or -1 if something went wrong
+       * @param {(pingMs: number) => void} rtt - Either the RTT ping, or -1 if something went wrong
        */
-      const ping = (url, result) => {
+      const ping = (url, rtt) => {
         url += (url.match(/\?/) ? "&" : "?") + "cors=true";
         const xhr = new XMLHttpRequest();
         const t = new Date().getTime();
         xhr.onload = () => {
           // We expect an empty response
           if (xhr.responseText.length === 0) {
-            // Rough timing estimate
+            // Fallback timing estimate
             let instspd = new Date().getTime() - t;
             try {
               // Try to get more accurate timing using Performance API
@@ -268,12 +262,12 @@ class Speedtest {
               if (d <= 0) d = p.duration;
               if (d > 0 && d < instspd) instspd = d;
             } catch (e) {}
-            result(instspd);
+            rtt(instspd);
           } else {
-            result(-1);
+            rtt(-1);
           }
         };
-        xhr.onerror = () => { result(-1); };
+        xhr.onerror = () => { rtt(-1); };
         xhr.open("GET", url);
         if (USE_PING_TIMEOUT) {
           try {
@@ -286,8 +280,8 @@ class Speedtest {
       const PINGS = 3; // up to 3 pings are performed, unless the server is down...
       const SLOW_THRESHOLD = 500; // ...or one of the pings is above this threshold
       /**
-       * This function repeatedly pings a server to get a good estimate of the ping.
-       * When it's done, it calls the done function without parameters.
+       * Repeatedly pings a server to get a good estimate of the ping.
+       * When it's done, it calls `done()` without parameters.
        * At the end of the execution, the server will have a new parameter called pingT,
        * which is either the best ping we got from the server or -1 if something went wrong.
        * @param {Server} server
@@ -316,7 +310,7 @@ class Speedtest {
       };
       let index = 0;
       /**
-       * Check servers in list, one by one
+       * Iterates through `serverList` to find the server with the lowest ping.
        */
       const done = () => {
         let bestServer = null;
@@ -326,7 +320,7 @@ class Speedtest {
           }
           index++;
         }
-        result(bestServer);
+        selected(bestServer);
       };
       const nextServer = () => {
         if (index === serverList.length) return void done();
@@ -366,9 +360,9 @@ class Speedtest {
 
   /**
    * Starts the test.
-   * During the test, the onupdate(data) callback function will be called periodically
-   * with data from the worker. At the end of the test, the onend(aborted) function will
-   * be called with a boolean telling you if the test was aborted or if it ended normally.
+   * During the test, the `onupdate(data)` callback function will be called periodically
+   * with data from the worker. At the end of the test, `onend(aborted)` will be called
+   * with a boolean which is true if the test was aborted, or false if it ended normally.
    */
   start() {
     if (this._state === 3) throw new Error("Test already running");
